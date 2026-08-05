@@ -13,6 +13,14 @@
   <a href="LICENSE.txt"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
 </p>
 
+<p align="center">
+  <a href="https://rubygems.org/gems/monkey_lens"><strong>Official RubyGems gem</strong></a>
+  ·
+  <a href="https://theworker02.github.io/monkeylens/"><strong>Documentation website</strong></a>
+  ·
+  <a href="https://github.com/theworker02/monkeylens/releases/latest"><strong>Latest GitHub release</strong></a>
+</p>
+
 MonkeyLens captures the effective Ruby method table for selected classes and modules, records who owns every method, tracks source locations, visibility, signatures, and ancestor order, then compares that runtime against a committed baseline.
 
 It turns invisible runtime mutation into reviewable evidence.
@@ -43,7 +51,7 @@ Then run:
 bundle install
 ```
 
-After release, direct installation will be:
+Install directly from the official RubyGems release:
 
 ```bash
 gem install monkey_lens
