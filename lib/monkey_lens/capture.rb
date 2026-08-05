@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "set"
+
 module MonkeyLens
   class Capture
     VISIBILITIES = %i[public protected private].freeze
@@ -10,8 +12,6 @@ module MonkeyLens
     end
 
     def call
-      require "set"
-
       records = @targets.sort.to_h do |target_name|
         target = constantize(target_name)
         [target_name, capture_target(target_name, target)]
