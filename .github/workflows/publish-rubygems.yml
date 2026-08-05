@@ -1,4 +1,4 @@
-name: Publish to RubyGems
+name: Publish release
 
 on:
   push:
@@ -15,30 +15,16 @@ permissions:
   contents: write
   id-token: write
 
+concurrency:
+  group: release-${{ github.event_name == 'workflow_dispatch' && inputs.confirm_version || github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: release
     steps:
-      - name: Check out pushed tag
-        if: github.event_name == 'push'
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Check out selected tag
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/checkout@v6
-        with:
-          ref: v${{ inputs.confirm_version }}
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.4"
-          bundler-cache: true
-          cache-version: 3
       - name: Resolve release version
         id: release
         shell: bash
@@ -53,20 +39,60 @@ jobs:
           fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-      - name: Verify tagged version and test
+
+      - name: Check out release tag
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.release.outputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+          cache-version: 3
+
+      - name: Verify tagged version and build
         env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
         shell: bash
         run: |
           set -euo pipefail
           VERSION=$(ruby -Ilib -rmonkey_lens/version -e 'print MonkeyLens::VERSION')
           test "$VERSION" = "$RELEASE_VERSION"
+          test "$(git describe --tags --exact-match)" = "$RELEASE_TAG"
           bundle exec rake test
           bundle exec rake build
           test -f "pkg/monkey_lens-${RELEASE_VERSION}.gem"
-          ruby -Ilib -e 'require "monkey_lens"; abort unless defined?(MonkeyLens::Policy)'
-      - name: Publish with RubyGems Trusted Publishing
-        uses: rubygems/release-gem@v1
+          bundle exec ruby -Ilib exe/monkeylens doctor
+
+      - name: Check RubyGems publication
+        id: published
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if curl -fsS "https://rubygems.org/api/v1/versions/monkey_lens.json" \
+            | jq -e --arg version "$RELEASE_VERSION" 'any(.[]; .number == $version)' >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Configure RubyGems trusted publishing
+        if: steps.published.outputs.exists != 'true'
+        uses: rubygems/configure-rubygems-credentials@v2.1.0
+
+      - name: Publish gem
+        if: steps.published.outputs.exists != 'true'
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: gem push "pkg/monkey_lens-${RELEASE_VERSION}.gem"
+
       - name: Create or refresh GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -74,9 +100,11 @@ jobs:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
         shell: bash
         run: |
+          set -euo pipefail
+          GEM_PATH="pkg/monkey_lens-${RELEASE_VERSION}.gem"
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" "pkg/monkey_lens-${RELEASE_VERSION}.gem" --clobber
+            gh release upload "$RELEASE_TAG" "$GEM_PATH" --clobber
           else
-            gh release create "$RELEASE_TAG" "pkg/monkey_lens-${RELEASE_VERSION}.gem" \
+            gh release create "$RELEASE_TAG" "$GEM_PATH" \
               --verify-tag --generate-notes --title "MonkeyLens ${RELEASE_TAG}"
           fi
