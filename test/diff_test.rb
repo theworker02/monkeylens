@@ -2,23 +2,31 @@
 
 require "test_helper"
 
+class MonkeyLensDiffFixture
+  def greet(name)
+    "hello #{name}"
+  end
+end
+
 class DiffTest < Minitest::Test
   def test_detects_prepend_and_owner_change
-    baseline = MonkeyLens.capture(targets: ["MonkeyLensFixture"])
+    baseline = MonkeyLens.capture(targets: ["MonkeyLensDiffFixture"])
 
     patch = Module.new do
       def greet(name)
         "patched #{super}"
       end
     end
-    MonkeyLensFixture.prepend(patch)
+    MonkeyLensDiffFixture.prepend(patch)
 
-    current = MonkeyLens.capture(targets: ["MonkeyLensFixture"])
+    current = MonkeyLens.capture(targets: ["MonkeyLensDiffFixture"])
     result = MonkeyLens.diff(baseline, current)
 
     refute result.clean?
     assert result.changes.any? { |change| change.type == "ancestor_chain_changed" }
-    assert result.changes.any? { |change| change.type == "owner_changed" && change.method_id == "MonkeyLensFixture#greet" }
+    assert result.changes.any? do |change|
+      change.type == "owner_changed" && change.method_id == "MonkeyLensDiffFixture#greet"
+    end
     assert result.failure?("high")
   end
 
