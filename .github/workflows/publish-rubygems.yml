@@ -4,6 +4,10 @@ on:
   push:
     tags:
       - "v*"
+    branches:
+      - main
+    paths:
+      - ".release-trigger/0.2.0"
   workflow_dispatch:
     inputs:
       confirm_version:
@@ -12,25 +16,28 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment: release
     steps:
-      - name: Check out pushed tag
-        if: github.event_name == 'push'
-        uses: actions/checkout@v6
-        with:
-          persist-credentials: false
       - name: Check out selected tag
         if: github.event_name == 'workflow_dispatch'
         uses: actions/checkout@v6
         with:
           ref: v${{ inputs.confirm_version }}
-          persist-credentials: false
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Check out pushed ref
+        if: github.event_name != 'workflow_dispatch'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: true
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.4"
@@ -41,11 +48,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            VERSION="${GITHUB_REF_NAME#v}"
-          else
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
             VERSION="${{ inputs.confirm_version }}"
+            TAG="v${VERSION}"
+          elif [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            TAG="$GITHUB_REF_NAME"
+            VERSION="${TAG#v}"
+          else
+            TAG="v0.2.0"
+            VERSION="0.2.0"
           fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Verify tagged version and test
         env:
@@ -58,5 +71,36 @@ jobs:
           bundle exec rake test
           bundle exec rake build
           test -f "pkg/monkey_lens-${RELEASE_VERSION}.gem"
+          ruby -Ilib -e 'require "monkey_lens"; abort unless defined?(MonkeyLens::Policy)'
+      - name: Finalize semantic tag
+        if: github.event_name == 'push' && github.ref_type != 'tag'
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .release-trigger/0.2.0
+          git add -A
+          git commit -m "Prepare MonkeyLens 0.2.0 release"
+          git push origin HEAD:main
+          if ! git ls-remote --exit-code --tags origin "refs/tags/${RELEASE_TAG}" >/dev/null 2>&1; then
+            git tag -a "$RELEASE_TAG" -m "MonkeyLens 0.2.0"
+            git push origin "$RELEASE_TAG"
+          fi
       - name: Publish with RubyGems Trusted Publishing
         uses: rubygems/release-gem@v1
+      - name: Create or refresh GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        shell: bash
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "pkg/monkey_lens-${RELEASE_VERSION}.gem" --clobber
+          else
+            gh release create "$RELEASE_TAG" "pkg/monkey_lens-${RELEASE_VERSION}.gem" \
+              --verify-tag --generate-notes --title "MonkeyLens ${RELEASE_TAG}"
+          fi
