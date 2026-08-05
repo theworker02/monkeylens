@@ -1,0 +1,8 @@
+{
+  "ruby": "3.5",
+  "checkout": "actions/checkout@v6",
+  "bundle_check": "passed",
+  "tests": "passed",
+  "gem_build": "passed",
+  "cli_doctor": "passed"
+}
