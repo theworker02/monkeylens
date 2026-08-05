@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">MonkeyLens mark</title><desc id="desc">A magnifying lens inspecting a Ruby method chain.</desc>
+  <defs><linearGradient id="lens" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fb923c"/><stop offset="1" stop-color="#dc2626"/></linearGradient><linearGradient id="ruby" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ef4444"/><stop offset="1" stop-color="#991b1b"/></linearGradient></defs>
+  <circle cx="220" cy="218" r="148" fill="#111827" stroke="url(#lens)" stroke-width="26"/><path d="M327 325 459 457" stroke="#f97316" stroke-width="44" stroke-linecap="round"/><path d="M132 208c35-70 137-81 185-18-44 69-139 78-185 18Z" fill="#0f172a" stroke="#fdba74" stroke-width="13"/><circle cx="224" cy="207" r="40" fill="url(#ruby)" stroke="#fecaca" stroke-width="9"/><path d="m196 207 22-26 31 14-5 34-35 5-13-27Z" fill="#fff1f2" opacity=".9"/><path d="M84 111h94M94 151h62M278 108h78M301 149h65M80 294h83M283 290h78" stroke="#fb923c" stroke-width="12" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" role="img" aria-labelledby="title desc">
+  <title id="title">MonkeyLens logo</title>
+  <desc id="desc">A lens inspecting a Ruby method chain beside the MonkeyLens wordmark.</desc>
+  <defs>
+    <linearGradient id="lens" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fb923c"/><stop offset="1" stop-color="#dc2626"/></linearGradient>
+    <linearGradient id="ruby" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ef4444"/><stop offset="1" stop-color="#991b1b"/></linearGradient>
+  </defs>
+  <g transform="translate(34 18) scale(.63)">
+    <circle cx="228" cy="218" r="146" fill="#111827" stroke="url(#lens)" stroke-width="25"/>
+    <path d="M331 321 456 446" stroke="#f97316" stroke-width="42" stroke-linecap="round"/>
+    <path d="M142 208c35-70 137-81 185-18-44 69-139 78-185 18Z" fill="#0f172a" stroke="#fdba74" stroke-width="13"/>
+    <circle cx="234" cy="207" r="39" fill="url(#ruby)" stroke="#fecaca" stroke-width="9"/>
+    <path d="m206 207 22-25 30 13-5 34-34 5-13-27Z" fill="#fff1f2" opacity=".9"/>
+    <path d="M96 113h92M105 151h61M286 111h76M308 151h65M91 292h83M292 287h77" stroke="#fb923c" stroke-width="12" stroke-linecap="round" opacity=".9"/>
+  </g>
+  <text x="390" y="168" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="112" font-weight="800" letter-spacing="-5" fill="#111827">MonkeyLens</text>
+  <text x="397" y="235" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="32" font-weight="600" letter-spacing="2.6" fill="#64748b">MAKE RUNTIME PATCHES VISIBLE</text>
+</svg>

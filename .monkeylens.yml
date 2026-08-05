@@ -1,0 +1,8 @@
+targets:
+  - String
+  - Array
+  - Hash
+  - Kernel
+ignore_methods: []
+fail_on: high
+format: text

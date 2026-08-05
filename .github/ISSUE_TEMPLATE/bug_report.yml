@@ -1,0 +1,41 @@
+name: Bug report
+description: Report an incorrect snapshot, diff, CLI failure, or compatibility issue.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve MonkeyLens.
+  - type: input
+    id: ruby
+    attributes:
+      label: Ruby version
+      placeholder: ruby 3.3.0
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: MonkeyLens version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction
+      description: Include a minimal class/module and the exact command used.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true

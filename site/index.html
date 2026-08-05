@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="MonkeyLens audits monkey patches, method ownership, prepend layers, and Ruby runtime drift.">
+  <meta name="theme-color" content="#111827">
+  <meta property="og:title" content="MonkeyLens — Make runtime patches visible">
+  <meta property="og:description" content="Capture and compare the effective method table of a Ruby process.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://theworker02.github.io/monkeylens/">
+  <link rel="canonical" href="https://theworker02.github.io/monkeylens/">
+  <link rel="icon" href="assets/monkeylens-mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>MonkeyLens — Make runtime patches visible</title>
+</head>
+<body>
+  <header>
+    <a class="brand" href="#top"><img src="assets/monkeylens-mark.svg" alt=""><span>MonkeyLens</span></a>
+    <nav><a href="#features">Features</a><a href="#install">Install</a><a href="https://github.com/theworker02/monkeylens">GitHub</a><a class="nav-cta" href="https://rubygems.org/gems/monkey_lens">RubyGems</a></nav>
+  </header>
+  <main id="top">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Ruby runtime auditing</p>
+        <h1>Make invisible<br><span>monkey patches visible.</span></h1>
+        <p class="lead">MonkeyLens records method ownership, source locations, signatures, visibility, and ancestor order—then blocks runtime drift before it reaches production.</p>
+        <div class="actions"><a class="primary" href="https://github.com/theworker02/monkeylens/releases/latest">View latest release</a><a class="secondary" href="https://github.com/theworker02/monkeylens">Explore source</a></div>
+      </div>
+      <div class="visual"><img src="assets/monkeylens-mark.svg" alt="MonkeyLens magnifying lens inspecting a Ruby runtime"><pre><code><b>$</b> monkeylens check
+
+<span>MonkeyLens PASS</span>
+no runtime drift detected</code></pre></div>
+    </section>
+    <section class="links"><a href="https://rubygems.org/gems/monkey_lens"><small>Official package</small><strong>rubygems.org/gems/monkey_lens</strong></a><a href="https://github.com/theworker02/monkeylens/releases/latest"><small>Built artifact</small><strong>Latest GitHub release</strong></a></section>
+    <section id="features" class="section"><p class="eyebrow">Runtime evidence</p><h2>Audit the method table Ruby actually uses.</h2><div class="grid"><article><b>01</b><h3>Ownership drift</h3><p>Detect when a reopened class, include, or prepend changes the implementation Ruby dispatches.</p></article><article><b>02</b><h3>Signature drift</h3><p>Compare arity, parameters, visibility, source location, and native-versus-Ruby implementation.</p></article><article><b>03</b><h3>CI enforcement</h3><p>Commit an approved baseline and fail builds when high-impact runtime changes appear.</p></article></div></section>
+    <section id="install" class="section install"><div><p class="eyebrow">Get started</p><h2>One baseline. One check.</h2></div><pre><code>gem install monkey_lens
+monkeylens capture
+monkeylens check</code></pre></section>
+  </main>
+  <footer><span>MonkeyLens · MIT licensed</span><span>Built by <a href="https://github.com/theworker02">theworker02</a></span></footer>
+</body>
+</html>

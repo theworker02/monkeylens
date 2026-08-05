@@ -1,0 +1,51 @@
+module MonkeyLens
+  VERSION: String
+
+  class Error < StandardError
+  end
+
+  class ConfigurationError < Error
+  end
+
+  class SnapshotError < Error
+  end
+
+  class Snapshot
+    SCHEMA: Integer
+    attr_reader schema: Integer
+    attr_reader ruby: String
+    attr_reader engine: String
+    attr_reader targets: Hash[String, untyped]
+
+    def self.read: (String path) -> Snapshot
+    def write: (String path) -> Snapshot
+    def to_h: () -> Hash[String, untyped]
+  end
+
+  class Change
+    attr_reader type: String
+    attr_reader severity: String
+    attr_reader target: String
+    attr_reader method_id: String?
+    attr_reader before: untyped
+    attr_reader after: untyped
+    attr_reader message: String
+
+    def level: () -> Integer
+    def to_h: () -> Hash[String, untyped]
+  end
+
+  class Config
+    attr_reader targets: Array[String]
+    attr_reader ignore_methods: Array[String]
+    attr_reader fail_on: String
+    attr_reader format: String
+    attr_reader baseline: String
+    attr_reader requires: Array[String]
+
+    def self.load: (?String path) -> Config
+  end
+
+  def self.capture: (targets: Array[String], ?ignore_methods: Array[String]) -> Snapshot
+  def self.diff: (Snapshot baseline, Snapshot current) -> Diff::Result
+end
