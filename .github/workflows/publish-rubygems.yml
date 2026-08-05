@@ -1,10 +1,13 @@
 name: Publish to RubyGems
 
 on:
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
       confirm_version:
-        description: Version to publish, such as 0.1.0
+        description: Version to publish, such as 0.2.0
         required: true
         type: string
 
@@ -17,7 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: release
     steps:
-      - uses: actions/checkout@v6
+      - name: Check out pushed tag
+        if: github.event_name == 'push'
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Check out selected tag
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v6
         with:
           ref: v${{ inputs.confirm_version }}
           persist-credentials: false
@@ -26,13 +36,27 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
           cache-version: 3
+      - name: Resolve release version
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="${{ inputs.confirm_version }}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Verify tagged version and test
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
         shell: bash
         run: |
           set -euo pipefail
           VERSION=$(ruby -Ilib -rmonkey_lens/version -e 'print MonkeyLens::VERSION')
-          test "$VERSION" = "${{ inputs.confirm_version }}"
+          test "$VERSION" = "$RELEASE_VERSION"
           bundle exec rake test
           bundle exec rake build
+          test -f "pkg/monkey_lens-${RELEASE_VERSION}.gem"
       - name: Publish with RubyGems Trusted Publishing
         uses: rubygems/release-gem@v1
