@@ -1,0 +1,70 @@
+name: Finalize MonkeyLens 0.2.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/finalize-v0.2.0.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+          cache-version: 3
+      - name: Validate and record diagnostics
+        shell: bash
+        run: |
+          set +e
+          {
+            echo '$ bundle exec rake test'
+            bundle exec rake test
+            echo '$ bundle exec rake build'
+            bundle exec rake build
+            echo '$ installed gem smoke test'
+            rm -rf tmp/release-gem
+            gem install pkg/monkey_lens-0.2.0.gem --install-dir tmp/release-gem --no-document
+            GEM_HOME="$PWD/tmp/release-gem" GEM_PATH="$PWD/tmp/release-gem" ruby -e 'require "monkey_lens"; abort unless MonkeyLens::VERSION == "0.2.0" && defined?(MonkeyLens::Policy)'
+          } > validation.log 2>&1
+          STATUS=$?
+          set -e
+          cat validation.log
+          if [ "$STATUS" -ne 0 ]; then
+            mkdir -p .release-status
+            cp validation.log .release-status/v0.2.0-failure.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            rm -f .github/workflows/finalize-v0.2.0.yml .release-trigger/0.2.0
+            git add -A
+            git commit -m "Record MonkeyLens 0.2.0 validation failure"
+            git push origin HEAD:main
+            exit "$STATUS"
+          fi
+      - name: Commit clean release source and tag
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/finalize-v0.2.0.yml .release-trigger/0.2.0 .release-status/v0.2.0-failure.txt
+          rm -rf pkg tmp/release-gem
+          git add -A
+          git commit -m "Prepare MonkeyLens 0.2.0 release"
+          git push origin HEAD:main
+          git tag -a v0.2.0 -m "MonkeyLens 0.2.0"
+          git push origin v0.2.0
+      - name: Dispatch trusted publishing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publish-rubygems.yml --ref main -f confirm_version=0.2.0
