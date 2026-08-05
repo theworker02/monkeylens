@@ -22,6 +22,11 @@ module MonkeyLens
   def diff(baseline, current)
     Diff.new(baseline:, current:).call
   end
+
+  def evaluate(result, policy:, threshold: "high", today: Date.today)
+    policy.evaluate(result, threshold:, today:)
+  end
 end
 
+require_relative "monkey_lens/policy"
 require_relative "monkey_lens/railtie" if defined?(Rails::Railtie)
