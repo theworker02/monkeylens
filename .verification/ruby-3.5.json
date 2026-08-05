@@ -1,0 +1,7 @@
+{
+  "ruby": "3.5",
+  "command": "bundle exec rake test",
+  "result": "passed",
+  "gem_build": "passed",
+  "cli_doctor": "passed"
+}
