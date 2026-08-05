@@ -1,0 +1,57 @@
+name: Verify Ruby 3.5 CI repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-ruby-3.5-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby 3.5
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.5"
+          bundler-cache: true
+          cache-version: 3
+
+      - name: Run exact CI sequence
+        shell: bash
+        run: |
+          set -euo pipefail
+          bundle check
+          bundle exec rake test
+          bundle exec rake build
+          bundle exec ruby -Ilib exe/monkeylens doctor
+
+      - name: Record success and remove verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .verification
+          cat > .verification/ruby-3.5-ci.json <<'JSON'
+          {
+            "ruby": "3.5",
+            "checkout": "actions/checkout@v6",
+            "bundle_check": "passed",
+            "tests": "passed",
+            "gem_build": "passed",
+            "cli_doctor": "passed"
+          }
+          JSON
+          rm -f .github/workflows/verify-ruby-3.5-ci.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Record repaired Ruby 3.5 CI verification"
+          git push origin HEAD:main
