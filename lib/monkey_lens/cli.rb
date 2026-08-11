@@ -40,13 +40,14 @@ module MonkeyLens
     private
 
     def capture
-      options = common_options.merge(output: ".monkeylens.json")
+      options = common_options.merge(output: ".monkeylens.json", provenance: false)
       parser = parser_for("capture", options) do |opts|
         opts.on("-o", "--output PATH", "Snapshot output path") { |value| options[:output] = value }
+        opts.on("--provenance", "Attribute method source to gem/app/stdlib/eval") { options[:provenance] = true }
       end
       parser.parse!(@argv)
       config = load_runtime(options)
-      snapshot = MonkeyLens.capture(targets: config.targets, ignore_methods: config.ignore_methods)
+      snapshot = MonkeyLens.capture(targets: config.targets, ignore_methods: config.ignore_methods, provenance: options[:provenance])
       snapshot.write(options[:output])
       @out.puts "Captured #{snapshot.targets.length} target(s) to #{options[:output]}"
       0
@@ -87,18 +88,23 @@ module MonkeyLens
 
     def inspect_target
       options = common_options
-      parser = parser_for("inspect", options)
+      parser = parser_for("inspect", options) do |opts|
+        opts.on("--provenance", "Attribute method source to gem/app/stdlib/eval") { |value| options[:provenance] = true }
+      end
       parser.parse!(@argv)
       target = @argv.shift
       raise OptionParser::MissingArgument, "TARGET is required" unless target
 
       load_requires(options[:requires])
-      snapshot = MonkeyLens.capture(targets: [target])
+      snapshot = MonkeyLens.capture(targets: [target], provenance: options[:provenance])
       record = snapshot.targets.fetch(target)
       @out.puts "#{target} (#{record.fetch("kind")})"
       @out.puts "Ancestors: #{record.fetch("ancestors").join(" -> ")}"
       record.fetch("instance_methods").each do |name, method|
-        @out.puts "  ##{name} [#{method.fetch("visibility")}] owner=#{method.fetch("owner")} source=#{method.fetch("source_location")&.join(":") || "native"}"
+        source = method.fetch("source_location")&.join(":") || "native"
+        provenance = method["provenance"]
+        provenance_text = provenance ? " provenance=#{provenance.fetch("kind")}" : ""
+        @out.puts "  ##{name} [#{method.fetch("visibility")}] owner=#{method.fetch("owner")} source=#{source}#{provenance_text}"
       end
       0
     end
@@ -137,7 +143,7 @@ module MonkeyLens
     end
 
     def common_options
-      {config: ".monkeylens.yml", requires: []}
+      {config: ".monkeylens.yml", requires: [], provenance: false}
     end
 
     def parser_for(command, options)

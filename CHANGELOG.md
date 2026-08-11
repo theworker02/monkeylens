@@ -2,6 +2,12 @@
 
 All notable changes to MonkeyLens are documented here.
 
+## 0.3.0 — 2026-08-11
+
+- Added `MonkeyLens::Provenance` to attribute method `source_location` to gem, app, stdlib, or eval origins.
+- Opt-in provenance capture via `provenance: true` on `MonkeyLens.capture` and `--provenance` on CLI capture/inspect.
+- Included provenance in inspect output and snapshot method records when enabled.
+
 ## 0.2.0 — 2026-08-04
 
 - Added `MonkeyLens::Policy` for approving known runtime drift without deleting evidence from the baseline.

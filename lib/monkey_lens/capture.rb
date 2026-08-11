@@ -6,9 +6,10 @@ module MonkeyLens
   class Capture
     VISIBILITIES = %i[public protected private].freeze
 
-    def initialize(targets:, ignore_methods: [])
+    def initialize(targets:, ignore_methods: [], provenance: false)
       @targets = targets
       @ignore_methods = ignore_methods.to_set
+      @provenance = provenance
     end
 
     def call
@@ -60,8 +61,9 @@ module MonkeyLens
           "visibility" => visibility.to_s,
           "parameters" => method.parameters.map { |kind, parameter| [kind.to_s, parameter&.to_s] },
           "arity" => method.arity,
-          "source_location" => normalize_source(method.source_location)
-        }]
+          "source_location" => normalize_source(method.source_location),
+          "provenance" => provenance_for(method.source_location)
+        }.compact]
       rescue NameError
         nil
       end.to_h
@@ -82,6 +84,12 @@ module MonkeyLens
       absolute = File.expand_path(path)
       cwd = File.expand_path(Dir.pwd)
       absolute.start_with?("#{cwd}/") ? absolute.delete_prefix("#{cwd}/") : absolute
+    end
+
+    def provenance_for(location)
+      return nil unless @provenance
+
+      Provenance.for_source_location(location)&.to_h
     end
   end
 end
