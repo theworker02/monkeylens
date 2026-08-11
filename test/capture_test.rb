@@ -20,4 +20,24 @@ class CaptureTest < Minitest::Test
 
     assert_equal first, second
   end
+
+  def test_provenance_is_opt_in
+    without = MonkeyLens.capture(targets: ["MonkeyLensFixture"])
+    method = without.targets.fetch("MonkeyLensFixture").fetch("instance_methods").fetch("greet")
+    refute method.key?("provenance")
+
+    with = MonkeyLens.capture(targets: ["MonkeyLensFixture"], provenance: true)
+    provenance = with.targets.fetch("MonkeyLensFixture").fetch("instance_methods").fetch("greet").fetch("provenance")
+
+    assert_equal "app", provenance.fetch("kind")
+    assert_match(/test_helper\.rb/, provenance.fetch("path"))
+  end
+
+  def test_provenance_classifies_eval_source
+    location = ["(eval)", 1]
+    provenance = MonkeyLens::Provenance.for_source_location(location)
+
+    assert_equal "eval", provenance.kind
+    assert_nil provenance.gem
+  end
 end

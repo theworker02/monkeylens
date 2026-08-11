@@ -5,6 +5,7 @@ require_relative "monkey_lens/config"
 require_relative "monkey_lens/snapshot"
 require_relative "monkey_lens/change"
 require_relative "monkey_lens/capture"
+require_relative "monkey_lens/provenance"
 require_relative "monkey_lens/diff"
 require_relative "monkey_lens/formatter"
 
@@ -15,8 +16,8 @@ module MonkeyLens
 
   module_function
 
-  def capture(targets:, ignore_methods: [])
-    Capture.new(targets:, ignore_methods:).call
+  def capture(targets:, ignore_methods: [], provenance: false)
+    Capture.new(targets:, ignore_methods:, provenance:).call
   end
 
   def diff(baseline, current)
