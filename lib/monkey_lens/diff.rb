@@ -101,8 +101,8 @@ module MonkeyLens
       if before.fetch("owner") != after.fetch("owner")
         changes << change("owner_changed", "critical", target, method_id:, before: before.fetch("owner"), after: after.fetch("owner"), message: "effective method owner changed")
       end
-      if before.fetch("source_location") != after.fetch("source_location")
-        changes << change("source_changed", "high", target, method_id:, before: before.fetch("source_location"), after: after.fetch("source_location"), message: "method implementation source changed")
+      if before.fetch("source_location", nil) != after.fetch("source_location", nil)
+        changes << change("source_changed", "high", target, method_id:, before: before.fetch("source_location", nil), after: after.fetch("source_location", nil), message: "method implementation source changed")
       end
       if before.fetch("parameters") != after.fetch("parameters") || before.fetch("arity") != after.fetch("arity")
         changes << change("signature_changed", "medium", target, method_id:, before: signature(before), after: signature(after), message: "method signature changed")
