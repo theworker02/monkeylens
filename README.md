@@ -152,11 +152,13 @@ end
 | Change | Default severity |
 | --- | --- |
 | Method owner changed | Critical |
+| Super-method owner changed | High |
 | Method source changed | High |
 | Method removed | High |
 | Prepend/ancestor order changed | High |
 | Method signature changed | Medium |
 | Visibility changed | Medium |
+| Method aliases changed | Medium |
 | Method added | Low |
 
 The threshold is configured with `fail_on: low|medium|high|critical`.

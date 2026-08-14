@@ -55,6 +55,9 @@ module MonkeyLens
 
         method = receiver.instance_method(method_name)
         visibility = VISIBILITIES.find { |candidate| receiver.public_send("#{candidate}_method_defined?", method_name) }
+        aliases = aliases_for(receiver, method_name, method)
+        super_method = method.super_method
+        original = method.respond_to?(:original_name) ? method.original_name.to_s : method_name.to_s
 
         [method_name.to_s, {
           "owner" => constant_name(method.owner),
@@ -62,7 +65,10 @@ module MonkeyLens
           "parameters" => method.parameters.map { |kind, parameter| [kind.to_s, parameter&.to_s] },
           "arity" => method.arity,
           "source_location" => normalize_source(method.source_location),
-          "provenance" => provenance_for(method.source_location)
+          "provenance" => provenance_for(method.source_location),
+          "original_name" => original,
+          "aliases" => aliases,
+          "super_owner" => super_method && constant_name(super_method.owner)
         }.compact]
       rescue NameError
         nil
@@ -90,6 +96,16 @@ module MonkeyLens
       return nil unless @provenance
 
       Provenance.for_source_location(location)&.to_h
+    end
+
+    def aliases_for(receiver, method_name, method)
+      receiver.instance_methods(true).filter_map do |other|
+        next if other == method_name
+
+        other.to_s if receiver.instance_method(other) == method
+      rescue NameError
+        nil
+      end.sort
     end
   end
 end

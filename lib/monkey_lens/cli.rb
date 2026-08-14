@@ -104,7 +104,10 @@ module MonkeyLens
         source = method.fetch("source_location")&.join(":") || "native"
         provenance = method["provenance"]
         provenance_text = provenance ? " provenance=#{provenance.fetch("kind")}" : ""
-        @out.puts "  ##{name} [#{method.fetch("visibility")}] owner=#{method.fetch("owner")} source=#{source}#{provenance_text}"
+        aliases = Array(method["aliases"])
+        alias_text = aliases.empty? ? "" : " aliases=#{aliases.join(",")}"
+        super_text = method["super_owner"] ? " super=#{method["super_owner"]}" : ""
+        @out.puts "  ##{name} [#{method.fetch("visibility")}] owner=#{method.fetch("owner")} source=#{source}#{provenance_text}#{alias_text}#{super_text}"
       end
       0
     end
