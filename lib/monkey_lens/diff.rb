@@ -110,6 +110,12 @@ module MonkeyLens
       if before.fetch("visibility") != after.fetch("visibility")
         changes << change("visibility_changed", "medium", target, method_id:, before: before.fetch("visibility"), after: after.fetch("visibility"), message: "method visibility changed")
       end
+      if before.fetch("aliases", []) != after.fetch("aliases", [])
+        changes << change("alias_changed", "medium", target, method_id:, before: before.fetch("aliases", []), after: after.fetch("aliases", []), message: "method aliases changed")
+      end
+      if before.fetch("super_owner", nil) != after.fetch("super_owner", nil)
+        changes << change("super_owner_changed", "high", target, method_id:, before: before.fetch("super_owner", nil), after: after.fetch("super_owner", nil), message: "super-method owner changed")
+      end
     end
 
     def signature(method)
