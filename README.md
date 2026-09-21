@@ -1,5 +1,5 @@
-<p align="center">
-  <img src="assets/brand/monkeylens-lockup.svg" alt="MonkeyLens — make runtime patches visible" width="760">
+﻿<p align="center">
+  <img src="assets/brand/monkeylens-lockup.svg" alt="MonkeyLens â€” make runtime patches visible" width="760">
 </p>
 
 <p align="center">
@@ -10,14 +10,14 @@
   <a href="https://github.com/theworker02/monkeylens/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/theworker02/monkeylens/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://rubygems.org/gems/monkey_lens"><img alt="RubyGems" src="https://img.shields.io/gem/v/monkey_lens.svg"></a>
   <a href="https://theworker02.github.io/monkeylens/"><img alt="Website" src="https://img.shields.io/badge/website-GitHub%20Pages-f97316.svg"></a>
-  <a href="LICENSE.txt"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+  <a href="LICENSE.txt"><img alt="MIT License" src="https://img.shields.io/badge/license-Proprietary%20(source--available)-blue.svg"></a>
 </p>
 
 <p align="center">
   <a href="https://rubygems.org/gems/monkey_lens"><strong>Official RubyGems gem</strong></a>
-  ·
+  Â·
   <a href="https://theworker02.github.io/monkeylens/"><strong>Documentation website</strong></a>
-  ·
+  Â·
   <a href="https://github.com/theworker02/monkeylens/releases/latest"><strong>Latest GitHub release</strong></a>
 </p>
 
@@ -189,4 +189,5 @@ MonkeyLens supports:
 
 ## License
 
-MIT © 2026 Matthew Looney
+**Source-available proprietary** — evaluation under [LICENSE](./LICENSE); commercial / production use via [COMMERCIAL.md](./COMMERCIAL.md). See [LICENSE_TRANSITION_NOTICE.md](./LICENSE_TRANSITION_NOTICE.md) and [NOTICE](./NOTICE).
+
