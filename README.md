@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/brand/monkeylens-lockup.svg" alt="MonkeyLens â€” make runtime patches visible" width="760">
+  <img src="assets/brand/monkeylens-lockup.svg" alt="MonkeyLens Ã¢â‚¬â€ make runtime patches visible" width="760">
 </p>
 
 <p align="center">
@@ -15,9 +15,9 @@
 
 <p align="center">
   <a href="https://rubygems.org/gems/monkey_lens"><strong>Official RubyGems gem</strong></a>
-  Â·
+  Ã‚Â·
   <a href="https://theworker02.github.io/monkeylens/"><strong>Documentation website</strong></a>
-  Â·
+  Ã‚Â·
   <a href="https://github.com/theworker02/monkeylens/releases/latest"><strong>Latest GitHub release</strong></a>
 </p>
 
@@ -189,7 +189,7 @@ MonkeyLens supports:
 
 ## License
 
-**Source-available proprietary** — evaluation under [LICENSE](./LICENSE); commercial / production use via [COMMERCIAL.md](./COMMERCIAL.md). See [LICENSE_TRANSITION_NOTICE.md](./LICENSE_TRANSITION_NOTICE.md) and [NOTICE](./NOTICE).
+**Source-available proprietary** â€” evaluation under [LICENSE](./LICENSE); commercial / production use via [COMMERCIAL.md](./COMMERCIAL.md). See [LICENSE_TRANSITION_NOTICE.md](./LICENSE_TRANSITION_NOTICE.md) and [NOTICE](./NOTICE).
 
 
 ---
@@ -197,3 +197,7 @@ MonkeyLens supports:
 ## License & acquisition
 
 This project is **proprietary**. Production use, redistribution, and commercial deployment require a written commercial license or completed acquisition. See [LICENSE](./LICENSE) and [ACQUISITION.md](./ACQUISITION.md). Contact [@theworker02](https://github.com/theworker02).
+
+## Acquisition diligence
+
+Buyer-facing diligence materials live in [docs/acquisition/](./docs/acquisition/). Commercial licensing contact path: [COMMERCIAL.md](./COMMERCIAL.md).
