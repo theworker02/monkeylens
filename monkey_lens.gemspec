@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Audit monkey patches and Ruby runtime method drift"
   spec.description = "MonkeyLens captures method ownership, source locations, signatures, visibility, and ancestor order for selected Ruby classes and modules, then detects runtime drift against a committed baseline."
   spec.homepage = "https://github.com/theworker02/monkeylens"
-  spec.license = "MIT"
+  spec.license = "Proprietary"
   spec.required_ruby_version = ">= 3.2"
 
   spec.metadata = {
